@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المسبحة الإلكترونية الذكية</title>
+    <title>المسبحة الإلكترونية المطورة</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700&display=swap');
-        
         * {
             margin: 0;
             padding: 0;
@@ -14,989 +12,1357 @@
         }
 
         body {
-            font-family: 'Cairo', 'Amiri', sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1e3c72 100%);
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: all 0.5s ease;
             overflow-x: hidden;
         }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="stars" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="18" cy="8" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="7" cy="15" r="0.8" fill="rgba(255,255,255,0.08)"/></pattern></defs><rect width="100" height="100" fill="url(%23stars)"/></svg>') repeat;
-            z-index: -1;
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
         }
 
-        .app-container {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding: 0;
-        }
-
-        .header {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .app-title {
-            color: white;
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .app-subtitle {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-            font-weight: 300;
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        .dhikr-selector {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .section-title {
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .dhikr-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .dhikr-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .dhikr-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .dhikr-card:hover::before {
-            left: 100%;
-        }
-
-        .dhikr-card.active {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            transform: scale(1.02);
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
-        }
-
-        .dhikr-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .dhikr-text {
-            color: white;
-            font-size: 0.95rem;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .dhikr-count {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.8rem;
-            font-weight: 400;
-        }
-
-        .counter-section {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 30px 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            text-align: center;
-        }
-
-        .current-dhikr {
-            color: white;
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            min-height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .counter-display {
-            position: relative;
-            margin: 20px auto;
-            width: 220px;
-            height: 220px;
-        }
-
-        .counter-ring {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .ring-background, .ring-progress {
-            fill: none;
-            stroke-width: 8;
-            stroke-linecap: round;
-        }
-
-        .ring-background {
-            stroke: rgba(255, 255, 255, 0.1);
-        }
-
-        .ring-progress {
-            stroke: #4CAF50;
-            stroke-dasharray: 628;
-            stroke-dashoffset: 628;
-            transition: stroke-dashoffset 0.5s ease;
-            transform: rotate(-90deg);
-            transform-origin: center;
-        }
-
-        .counter-button {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            width: 190px;
-            height: 190px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 50%, #FF6B6B 100%);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3),
-                        inset 0 2px 10px rgba(255, 255, 255, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .counter-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent 60%);
-            border-radius: 50%;
-        }
-
-        .counter-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.4),
-                        inset 0 2px 10px rgba(255, 255, 255, 0.3);
-        }
-
-        .counter-button:active {
-            transform: scale(0.95);
-        }
-
-        .counter-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: white;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            z-index: 2;
-            margin-bottom: 5px;
-        }
-
-        .counter-label {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 500;
-            z-index: 2;
-        }
-
-        .targets-section {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .target-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .target-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px);
-        }
-
-        .target-btn.active {
-            background: #4CAF50;
-            border-color: #4CAF50;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-        }
-
-        .stats-grid {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        .stat-card {
-            text-align: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stat-number {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #4CAF50;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 500;
-        }
-
-        .controls-section {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .controls-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-
-        .control-btn {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 15px;
-            border-radius: 15px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .control-btn:hover {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .control-btn.danger {
-            background: linear-gradient(135deg, #FF6B6B, #FF5252);
-        }
-
-        .control-btn.success {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-        }
-
-        .floating-action {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
-            transition: all 0.3s ease;
-            z-index: 200;
-        }
-
-        .floating-action:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.5);
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 15px;
-            font-weight: 600;
-            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
-            transition: transform 0.3s ease;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-        }
-
-        .notification.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .celebration {
+        .particles {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 999;
+            z-index: 1;
         }
 
-        .confetti {
+        .particle {
             position: absolute;
-            width: 8px;
-            height: 8px;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
             border-radius: 50%;
-            animation: confetti-fall 3s linear infinite;
+            animation: float 6s infinite linear;
         }
 
-        @keyframes confetti-fall {
+        @keyframes float {
             0% {
-                transform: translateY(-100vh) rotate(0deg);
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
                 opacity: 1;
             }
             100% {
-                transform: translateY(100vh) rotate(720deg);
+                transform: translateY(-100px) rotate(360deg);
                 opacity: 0;
             }
         }
 
-        .progress-text {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.9rem;
-            margin-top: 10px;
-            font-weight: 500;
-        }
-
-        .ripple-effect {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.6);
-            transform: scale(0);
-            animation: ripple 0.6s linear;
-            pointer-events: none;
-        }
-
-        @keyframes ripple {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-
-        .dhikr-benefits {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-top: 10px;
-        }
-
-        .benefit-text {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.9rem;
-            line-height: 1.6;
+        .tasbih-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             text-align: center;
-            font-weight: 400;
+            max-width: 450px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.5s ease;
+            position: relative;
+            z-index: 2;
         }
 
-        @media (max-width: 480px) {
-            .main-content {
-                padding: 15px;
-                gap: 20px;
-            }
-            
-            .counter-display {
-                width: 200px;
-                height: 200px;
-            }
-            
-            .counter-button {
-                width: 170px;
-                height: 170px;
-                top: 15px;
-                left: 15px;
-            }
-            
-            .counter-number {
-                font-size: 2.2rem;
-            }
-            
-            .dhikr-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 15px;
-            }
-            
-            .controls-grid {
-                grid-template-columns: 1fr;
-            }
+        body.dark-mode .tasbih-container {
+            background: rgba(20, 20, 40, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
-        .pulse-animation {
-            animation: pulse 0.3s ease;
+        .theme-toggle {
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+        }
+
+        .theme-toggle::before {
+            content: '🌙';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        body.dark-mode .theme-toggle {
+            background: #4ecdc4;
+        }
+
+        body.dark-mode .theme-toggle::before {
+            content: '☀️';
+            transform: translateX(30px);
+            background: #1a1a2e;
+        }
+
+        .title {
+            color: #333;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+            to { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 20px rgba(102, 126, 234, 0.3); }
+        }
+
+        body.dark-mode .title {
+            color: #e8e8e8;
+        }
+
+        .progress-ring {
+            margin: 20px 0;
+        }
+
+        .progress-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-background {
+            fill: none;
+            stroke: rgba(0, 0, 0, 0.1);
+            stroke-width: 8;
+        }
+
+        .progress-ring-progress {
+            fill: none;
+            stroke: #3498db;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.5s ease;
+        }
+
+        body.dark-mode .progress-ring-progress {
+            stroke: #4ecdc4;
+        }
+
+        .dhikr-text {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 15px;
+            border-right: 4px solid #3498db;
+        }
+
+        body.dark-mode .dhikr-text {
+            color: #b8b8d6;
+            background: rgba(78, 205, 196, 0.1);
+            border-right-color: #4ecdc4;
+        }
+
+        .counter-container {
+            position: relative;
+            margin: 30px 0;
+        }
+
+        .counter-input {
+            font-size: 72px;
+            font-weight: bold;
+            color: #27ae60;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            background: transparent;
+            border: 2px dashed #27ae60;
+            border-radius: 15px;
+            padding: 20px;
+            width: 100%;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            animation: pulse 2s infinite;
+        }
+
+        .counter-input:hover {
+            border-color: #2ecc71;
+            background: rgba(46, 204, 113, 0.1);
+            transform: scale(1.02);
+        }
+
+        .counter-input:focus {
+            outline: none;
+            border-color: #2ecc71;
+            background: rgba(46, 204, 113, 0.1);
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.3);
+            animation: none;
+        }
+
+        body.dark-mode .counter-input {
+            color: #4ecdc4;
+            border-color: #4ecdc4;
+            text-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+        }
+
+        body.dark-mode .counter-input:hover,
+        body.dark-mode .counter-input:focus {
+            border-color: #26d0ce;
+            background: rgba(78, 205, 196, 0.1);
+            box-shadow: 0 0 30px rgba(78, 205, 196, 0.4);
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.4); }
+            50% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(39, 174, 96, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(39, 174, 96, 0); }
+        }
+
+        .milestone-celebration {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            animation: celebration 2s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes celebration {
+            0% { transform: translateX(-50%) translateY(0) scale(0); opacity: 0; }
+            50% { transform: translateX(-50%) translateY(-20px) scale(1.2); opacity: 1; }
+            100% { transform: translateX(-50%) translateY(-40px) scale(1); opacity: 0; }
+        }
+
+        .click-button {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #3498db, #2980b9);
+            border: none;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 15px 40px rgba(52, 152, 219, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .click-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(52, 152, 219, 0.6);
+        }
+
+        .click-button:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        .click-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
+        }
+
+        .click-button.clicked::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        body.dark-mode .click-button {
+            background: linear-gradient(145deg, #4ecdc4, #44a08d);
+            box-shadow: 0 15px 40px rgba(78, 205, 196, 0.4), 0 0 50px rgba(78, 205, 196, 0.2);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+        }
+
+        body.dark-mode .click-button:hover {
+            box-shadow: 0 20px 50px rgba(78, 205, 196, 0.6), 0 0 70px rgba(78, 205, 196, 0.4);
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        .dhikr-selector {
+            margin-bottom: 30px;
+        }
+
+        .dhikr-options {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .dhikr-option {
+            padding: 12px 20px;
+            border: 2px solid #3498db;
+            border-radius: 25px;
+            background: transparent;
+            color: #3498db;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .dhikr-option.active {
+            background: #3498db;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .dhikr-option:hover {
+            background: #3498db;
+            color: white;
+            transform: scale(1.02);
+        }
+
+        body.dark-mode .dhikr-option {
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+        }
+
+        body.dark-mode .dhikr-option.active,
+        body.dark-mode .dhikr-option:hover {
+            background: #4ecdc4;
+            color: #1a1a2e;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(145deg, #e74c3c, #c0392b);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+            font-weight: 600;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .control-btn.export {
+            background: linear-gradient(145deg, #27ae60, #229954);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .control-btn.export:hover {
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4);
+        }
+
+        .stats {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 15px;
+            font-size: 14px;
+            color: #2c3e50;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+        }
+
+        body.dark-mode .stats {
+            background: rgba(78, 205, 196, 0.1);
+            color: #b8b8d6;
+        }
+
+        body.dark-mode .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .top-controls {
+            position: absolute;
+            top: 15px;
+            width: calc(100% - 30px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .left-controls, .right-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #3498db;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .control-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        body.dark-mode .control-icon {
+            background: #4ecdc4;
+        }
+
+        .fullscreen-mode {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            background: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .fullscreen-mode .tasbih-container {
+            max-width: 600px;
+            width: 100%;
+            height: auto;
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+
+        .import-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .import-modal.show {
+            display: flex;
+        }
+
+        .import-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .import-content {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .file-drop-zone {
+            border: 2px dashed #3498db;
+            border-radius: 15px;
+            padding: 40px 20px;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .file-drop-zone:hover,
+        .file-drop-zone.dragover {
+            border-color: #2980b9;
+            background: rgba(52, 152, 219, 0.2);
+            transform: scale(1.02);
+        }
+
+        body.dark-mode .file-drop-zone {
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        body.dark-mode .file-drop-zone:hover,
+        body.dark-mode .file-drop-zone.dragover {
+            border-color: #26d0ce;
+            background: rgba(78, 205, 196, 0.2);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .achievement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(145deg, #f39c12, #e67e22);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            z-index: 1000;
+            transition: all 0.5s ease;
+        }
+
+        .achievement-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .quick-add {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .quick-add-btn {
+            padding: 8px 16px;
+            border: 2px solid #3498db;
+            border-radius: 20px;
+            background: transparent;
+            color: #3498db;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .quick-add-btn:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        body.dark-mode .quick-add-btn {
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+        }
+
+        body.dark-mode .quick-add-btn:hover {
+            background: #4ecdc4;
+            color: #1a1a2e;
+        }
+
+        @media (max-width: 480px) {
+            .tasbih-container {
+                padding: 20px 15px;
+            }
+
+            .counter-input {
+                font-size: 50px;
+                padding: 15px;
+            }
+
+            .click-button {
+                width: 200px;
+                height: 200px;
+                font-size: 18px;
+            }
+
+            .title {
+                font-size: 22px;
+                margin-bottom: 15px;
+            }
+
+            .dhikr-text {
+                font-size: 16px;
+                padding: 12px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                gap: 10px;
+            }
+
+            .control-btn {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+
+            .top-controls {
+                top: 10px;
+            }
+
+            .control-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+
+            .theme-toggle {
+                width: 50px;
+                height: 25px;
+            }
+
+            .theme-toggle::before {
+                width: 21px;
+                height: 21px;
+                font-size: 10px;
+            }
+
+            body.dark-mode .theme-toggle::before {
+                transform: translateX(25px);
+            }
+
+            .import-content {
+                padding: 20px;
+                width: 95%;
+            }
+
+            .file-drop-zone {
+                padding: 30px 15px;
+            }
+
+            .fullscreen-mode .tasbih-container {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .counter-input {
+                font-size: 40px;
+            }
+
+            .click-button {
+                width: 180px;
+                height: 180px;
+                font-size: 16px;
+            }
+
+            .dhikr-options {
+                gap: 5px;
+            }
+
+            .dhikr-option {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .quick-add {
+                gap: 5px;
+            }
+
+            .quick-add-btn {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <header class="header">
-            <h1 class="app-title">🕌 المسبحة الإلكترونية الذكية</h1>
-            <p class="app-subtitle">سبح وأذكر الله في كل وقت</p>
-        </header>
+    <div class="particles" id="particles"></div>
 
-        <main class="main-content">
-            <section class="dhikr-selector">
-                <h2 class="section-title">اختر نوع الذكر</h2>
-                <div class="dhikr-grid">
-                    <div class="dhikr-card active" data-dhikr="سبحان الله" data-reward="حسنة تعادل عتق رقبة">
-                        <div class="dhikr-text">سبحان الله</div>
-                        <div class="dhikr-count">0 مرة</div>
-                    </div>
-                    <div class="dhikr-card" data-dhikr="الحمد لله" data-reward="تملأ الميزان">
-                        <div class="dhikr-text">الحمد لله</div>
-                        <div class="dhikr-count">0 مرة</div>
-                    </div>
-                    <div class="dhikr-card" data-dhikr="الله أكبر" data-reward="أحب إلى الله مما طلعت عليه الشمس">
-                        <div class="dhikr-text">الله أكبر</div>
-                        <div class="dhikr-count">0 مرة</div>
-                    </div>
-                    <div class="dhikr-card" data-dhikr="لا إله إلا الله" data-reward="أفضل الذكر">
-                        <div class="dhikr-text">لا إله إلا الله</div>
-                        <div class="dhikr-count">0 مرة</div>
-                    </div>
-                    <div class="dhikr-card" data-dhikr="أستغفر الله العظيم" data-reward="يغفر الذنوب">
-                        <div class="dhikr-text">أستغفر الله العظيم</div>
-                        <div class="dhikr-count">0 مرة</div>
-                    </div>
-                    <div class="dhikr-card" data-dhikr="لا حول ولا قوة إلا بالله" data-reward="كنز من كنوز الجنة">
-                        <div class="dhikr-text">لا حول ولا قوة إلا بالله</div>
-                        <div class="dhikr-count">0 مرة</div>
-                    </div>
-                </div>
-            </section>
+    <div class="tasbih-container">
+        <div class="top-controls">
+            <div class="left-controls">
+                <button class="control-icon" id="soundToggle" title="تشغيل/إيقاف الصوت">🔊</button>
+                <button class="control-icon" id="fullscreenToggle" title="وضع ملء الشاشة">⛶</button>
+            </div>
+            <div class="right-controls">
+                <button class="theme-toggle" id="themeToggle" title="تبديل الوضع الليلي"></button>
+            </div>
+        </div>
 
-            <section class="counter-section">
-                <div class="current-dhikr" id="currentDhikr">سبحان الله</div>
-                
-                <div class="counter-display">
-                    <svg class="counter-ring" viewBox="0 0 220 220">
-                        <circle cx="110" cy="110" r="100" class="ring-background"></circle>
-                        <circle cx="110" cy="110" r="100" class="ring-progress" id="progressRing"></circle>
-                    </svg>
-                    <button class="counter-button" id="counterBtn">
-                        <span class="counter-number" id="counterNumber">0</span>
-                        <span class="counter-label">اضغط للعد</span>
-                    </button>
-                </div>
+        <h1 class="title">🕌 المسبحة الإلكترونية المطورة 🕌</h1>
 
-                <div class="progress-text" id="progressText">0 من 33 (0%)</div>
-                
-                <div class="targets-section">
-                    <button class="target-btn active" data-target="33">33</button>
-                    <button class="target-btn" data-target="99">99</button>
-                    <button class="target-btn" data-target="100">100</button>
-                    <button class="target-btn" data-target="500">500</button>
-                    <button class="target-btn" data-target="1000">1000</button>
-                </div>
-            </section>
+        <div class="dhikr-selector">
+            <div class="dhikr-options">
+                <button class="dhikr-option active" data-dhikr="استغفار">استغفار</button>
+                <button class="dhikr-option" data-dhikr="صلاة">صلاة على النبي</button>
+                <button class="dhikr-option" data-dhikr="تسبيح">تسبيح</button>
+            </div>
+        </div>
 
-            <section class="dhikr-benefits">
-                <div class="benefit-text" id="benefitText">
-                    "من قال سبحان الله وبحمده مائة مرة حطت خطاياه وإن كانت مثل زبد البحر"
-                </div>
-            </section>
+        <div class="dhikr-text" id="dhikrText">
+            أَستَغفِرُ اللهَ العَظِيمَ الَّذِي لا إِلَهَ إِلا هُوَ الحَيُّ القَيُّومُ وَأَتُوبُ إِلَيهِ
+        </div>
 
-            <section class="stats-grid">
-                <div class="stat-card">
-                    <span class="stat-number" id="totalToday">0</span>
-                    <span class="stat-label">اليوم</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number" id="currentStreak">0</span>
-                    <span class="stat-label">المجموع الكلي</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number" id="targetProgress">0%</span>
-                    <span class="stat-label">تقدم الهدف</span>
-                </div>
-            </section>
+        <div class="progress-ring">
+            <svg width="120" height="120">
+                <circle class="progress-ring-background" cx="60" cy="60" r="54"/>
+                <circle class="progress-ring-progress" cx="60" cy="60" r="54"
+                        stroke-dasharray="339.292" stroke-dashoffset="339.292" id="progressCircle"/>
+            </svg>
+        </div>
 
-            <section class="controls-section">
-                <h2 class="section-title">التحكم</h2>
-                <div class="controls-grid">
-                    <button class="control-btn" id="resetBtn">🔄 إعادة تعيين</button>
-                    <button class="control-btn" id="soundBtn">🔊 الصوت: تشغيل</button>
-                    <button class="control-btn success" id="shareBtn">📤 مشاركة الإنجاز</button>
-                    <button class="control-btn" id="settingsBtn">⚙️ الإعدادات</button>
-                </div>
-            </section>
-        </main>
+        <div class="counter-container">
+            <input type="number" class="counter-input" id="counterInput" value="0" min="0">
+            <div class="milestone-celebration" id="celebration"></div>
+        </div>
 
-        <button class="floating-action" id="quickCount" title="عد سريع">+</button>
+        <div class="quick-add">
+            <button class="quick-add-btn" data-add="10">+10</button>
+            <button class="quick-add-btn" data-add="33">+33</button>
+            <button class="quick-add-btn" data-add="100">+100</button>
+        </div>
+
+        <button class="click-button" id="clickButton">
+            اضغط للعد<br>
+            <small>أو استخدم المسافة</small>
+        </button>
+
+        <div class="controls">
+            <button class="control-btn" id="resetButton">إعادة تعيين</button>
+            <button class="control-btn" id="saveButton">حفظ التقدم</button>
+            <button class="control-btn export" id="exportButton">تصدير البيانات</button>
+            <button class="control-btn export" id="importButton">استيراد البيانات</button>
+        </div>
+
+        <div class="stats" id="stats">
+            <div class="stat-item">
+                <strong>آخر حفظ:</strong><br>
+                <span id="lastSave">لم يتم الحفظ بعد</span>
+            </div>
+            <div class="stat-item">
+                <strong>المجموع اليوم:</strong><br>
+                <span id="todayTotal">0</span>
+            </div>
+        </div>
     </div>
 
-    <div class="notification" id="notification"></div>
-    <div class="celebration" id="celebration"></div>
+    <div class="achievement-popup" id="achievementPopup">
+        <h3>🎉 تهانينا! 🎉</h3>
+        <p id="achievementText"></p>
+    </div>
+
+    <!-- Import Modal -->
+    <div class="import-modal" id="importModal">
+        <div class="import-content">
+            <button class="close-modal" id="closeModal">×</button>
+            <h3>📥 استيراد البيانات</h3>
+            <p>اختر ملف البيانات المحفوظ لاستيراده</p>
+
+            <div class="file-drop-zone" id="dropZone">
+                <div>
+                    <h4>📁 اسحب الملف هنا أو انقر للاختيار</h4>
+                    <p>يدعم ملفات JSON فقط</p>
+                </div>
+            </div>
+
+            <input type="file" id="fileInput" accept=".json" style="display: none;">
+
+            <div style="margin-top: 20px;">
+                <button class="control-btn" id="selectFileBtn">اختيار ملف</button>
+                <button class="control-btn" id="cancelImport" style="background: #95a5a6;">إلغاء</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        class SmartTasbih {
+        class IslamicTasbih {
             constructor() {
-                this.currentCount = 0;
-                this.currentDhikr = 'سبحان الله';
-                this.currentTarget = 33;
-                this.soundEnabled = true;
-                this.dhikrCounts = this.loadData('dhikrCounts') || {};
-                this.todayTotal = this.loadTodayTotal();
-                this.totalCount = this.loadData('totalCount') || 0;
-                
-                this.benefits = {
-                    'سبحان الله': 'من قال سبحان الله وبحمده مائة مرة حطت خطاياه وإن كانت مثل زبد البحر',
-                    'الحمد لله': 'الحمد لله تملأ الميزان، وسبحان الله والحمد لله تملآن ما بين السماء والأرض',
-                    'الله أكبر': 'الله أكبر أحب إلى الله مما طلعت عليه الشمس',
-                    'لا إله إلا الله': 'أفضل الذكر لا إله إلا الله، وأفضل الدعاء الحمد لله',
-                    'أستغفر الله العظيم': 'من أكثر من الاستغفار جعل الله له من كل هم فرجا ومن كل ضيق مخرجا',
-                    'لا حول ولا قوة إلا بالله': 'كنز من كنوز الجنة'
+                this.currentDhikr = 'استغفار';
+                this.counter = 0;
+                this.isDarkMode = localStorage.getItem('darkMode') === 'true';
+                this.soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+                this.todayCount = this.getTodayCount();
+                this.isFullscreen = false;
+
+                this.dhikrTexts = {
+                    'استغفار': 'أَستَغفِرُ اللهَ العَظِيمَ الَّذِي لا إِلَهَ إِلا هُوَ الحَيُّ القَيُّومُ وَأَتُوبُ إِلَيهِ',
+                    'صلاة': 'اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ',
+                    'تسبيح': 'سُبْحَانَ اللهِ وَالحَمْدُ للهِ وَلا إِلَهَ إِلا اللهُ وَاللهُ أَكْبَرُ'
                 };
-                
+
+                this.milestones = [33, 100, 300, 500, 1000, 2000, 5000, 10000];
+
                 this.initializeElements();
-                this.bindEvents();
+                this.createParticles();
+                this.loadProgress();
+                this.attachEventListeners();
                 this.updateDisplay();
-                this.loadSession();
+                this.applyTheme();
             }
 
             initializeElements() {
-                this.counterBtn = document.getElementById('counterBtn');
-                this.counterNumber = document.getElementById('counterNumber');
-                this.currentDhikrEl = document.getElementById('currentDhikr');
-                this.progressRing = document.getElementById('progressRing');
-                this.progressText = document.getElementById('progressText');
-                this.benefitText = document.getElementById('benefitText');
-                this.notification = document.getElementById('notification');
+                this.counterInput = document.getElementById('counterInput');
+                this.clickButton = document.getElementById('clickButton');
+                this.resetButton = document.getElementById('resetButton');
+                this.saveButton = document.getElementById('saveButton');
+                this.exportButton = document.getElementById('exportButton');
+                this.importButton = document.getElementById('importButton');
+                this.dhikrTextElement = document.getElementById('dhikrText');
+                this.lastSaveElement = document.getElementById('lastSave');
+                this.todayTotalElement = document.getElementById('todayTotal');
+                this.dhikrOptions = document.querySelectorAll('.dhikr-option');
+                this.themeToggle = document.getElementById('themeToggle');
+                this.soundToggle = document.getElementById('soundToggle');
+                this.fullscreenToggle = document.getElementById('fullscreenToggle');
+                this.progressCircle = document.getElementById('progressCircle');
                 this.celebration = document.getElementById('celebration');
-                
-                this.totalTodayEl = document.getElementById('totalToday');
-                this.currentStreakEl = document.getElementById('currentStreak');
-                this.targetProgressEl = document.getElementById('targetProgress');
-                
-                this.resetBtn = document.getElementById('resetBtn');
-                this.soundBtn = document.getElementById('soundBtn');
-                this.shareBtn = document.getElementById('shareBtn');
-                this.settingsBtn = document.getElementById('settingsBtn');
-                this.quickCountBtn = document.getElementById('quickCount');
-                
-                this.dhikrCards = document.querySelectorAll('.dhikr-card');
-                this.targetBtns = document.querySelectorAll('.target-btn');
+                this.achievementPopup = document.getElementById('achievementPopup');
+                this.achievementText = document.getElementById('achievementText');
+                this.quickAddButtons = document.querySelectorAll('.quick-add-btn');
+
+                // Import modal elements
+                this.importModal = document.getElementById('importModal');
+                this.closeModal = document.getElementById('closeModal');
+                this.dropZone = document.getElementById('dropZone');
+                this.fileInput = document.getElementById('fileInput');
+                this.selectFileBtn = document.getElementById('selectFileBtn');
+                this.cancelImport = document.getElementById('cancelImport');
             }
 
-            bindEvents() {
-                this.counterBtn.addEventListener('click', (e) => this.incrementCounter(e));
-                this.quickCountBtn.addEventListener('click', (e) => this.incrementCounter(e));
-                
-                this.resetBtn.addEventListener('click', () => this.resetCounter());
-                this.soundBtn.addEventListener('click', () => this.toggleSound());
-                this.shareBtn.addEventListener('click', () => this.shareProgress());
-                this.settingsBtn.addEventListener('click', () => this.showSettings());
+            createParticles() {
+                const particlesContainer = document.getElementById('particles');
+                for (let i = 0; i < 50; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 6 + 's';
+                    particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                    particlesContainer.appendChild(particle);
+                }
+            }
 
-                this.dhikrCards.forEach(card => {
-                    card.addEventListener('click', () => this.selectDhikr(card));
+            attachEventListeners() {
+                this.clickButton.addEventListener('click', () => this.incrementCounter());
+                this.resetButton.addEventListener('click', () => this.resetCounter());
+                this.saveButton.addEventListener('click', () => this.saveProgress());
+                this.exportButton.addEventListener('click', () => this.exportData());
+                this.importButton.addEventListener('click', () => this.showImportModal());
+                this.themeToggle.addEventListener('click', () => this.toggleTheme());
+                this.soundToggle.addEventListener('click', () => this.toggleSound());
+                this.fullscreenToggle.addEventListener('click', () => this.toggleFullscreen());
+
+                // Import modal event listeners
+                this.closeModal.addEventListener('click', () => this.hideImportModal());
+                this.cancelImport.addEventListener('click', () => this.hideImportModal());
+                this.selectFileBtn.addEventListener('click', () => this.fileInput.click());
+                this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+
+                // Drag and drop functionality
+                this.dropZone.addEventListener('click', () => this.fileInput.click());
+                this.dropZone.addEventListener('dragover', (e) => this.handleDragOver(e));
+                this.dropZone.addEventListener('dragleave', (e) => this.handleDragLeave(e));
+                this.dropZone.addEventListener('drop', (e) => this.handleDrop(e));
+
+                // Counter input handling
+                this.counterInput.addEventListener('input', (e) => this.handleCounterEdit(e));
+                this.counterInput.addEventListener('change', () => this.validateCounter());
+
+                // Quick add buttons
+                this.quickAddButtons.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const addValue = parseInt(e.target.dataset.add);
+                        this.counter += addValue;
+                        this.updateDisplay();
+                        this.checkMilestone();
+                        this.saveProgress();
+                    });
                 });
 
-                this.targetBtns.forEach(btn => {
-                    btn.addEventListener('click', () => this.selectTarget(btn));
+                this.dhikrOptions.forEach(option => {
+                    option.addEventListener('click', (e) => this.switchDhikr(e.target.dataset.dhikr));
                 });
 
+                // Keyboard shortcuts
                 document.addEventListener('keydown', (e) => {
-                    if (e.code === 'Space') {
+                    if (e.code === 'Space' && e.target !== this.counterInput) {
                         e.preventDefault();
                         this.incrementCounter();
                     }
+                    if (e.code === 'KeyR' && e.ctrlKey) {
+                        e.preventDefault();
+                        this.resetCounter();
+                    }
+                    if (e.code === 'KeyS' && e.ctrlKey) {
+                        e.preventDefault();
+                        this.saveProgress();
+                    }
+                    if (e.code === 'F11' || (e.code === 'KeyF' && e.ctrlKey)) {
+                        e.preventDefault();
+                        this.toggleFullscreen();
+                    }
+                    if (e.code === 'Escape' && this.isFullscreen) {
+                        this.toggleFullscreen();
+                    }
+                    if (e.code === 'Escape' && this.importModal.classList.contains('show')) {
+                        this.hideImportModal();
+                    }
                 });
 
-                // Touch events for mobile
-                this.counterBtn.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    this.incrementCounter(e);
+                // Auto-save every 10 counts
+                document.addEventListener('counterChanged', () => {
+                    if (this.counter % 10 === 0) {
+                        this.autoSave();
+                    }
                 });
             }
 
-            incrementCounter(e) {
-                this.currentCount++;
-                this.todayTotal++;
-                this.totalCount++;
-                
-                if (!this.dhikrCounts[this.currentDhikr]) {
-                    this.dhikrCounts[this.currentDhikr] = 0;
+            incrementCounter() {
+                this.counter++;
+                this.todayCount++;
+                this.updateDisplay();
+                this.animateButton();
+                this.triggerVibration();
+                this.playSound();
+                this.checkMilestone();
+                this.updateProgress();
+                this.dispatchCounterEvent();
+            }
+
+            handleCounterEdit(e) {
+                const value = parseInt(e.target.value) || 0;
+                this.counter = Math.max(0, value);
+            }
+
+            validateCounter() {
+                this.counter = Math.max(0, parseInt(this.counterInput.value) || 0);
+                this.updateDisplay();
+                this.saveProgress();
+            }
+
+            triggerVibration() {
+                if ('vibrate' in navigator) {
+                    navigator.vibrate(50);
                 }
-                this.dhikrCounts[this.currentDhikr]++;
+            }
 
-                this.updateDisplay();
-                this.saveData();
-                this.createRipple(e);
-                this.playClickSound();
-                this.addPulseAnimation();
+            playSound() {
+                if (this.soundEnabled) {
+                    // Create a simple beep sound
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
 
-                if (this.currentCount >= this.currentTarget) {
-                    this.celebrate();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+
+                    oscillator.frequency.value = 800;
+                    oscillator.type = 'sine';
+
+                    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.1);
                 }
             }
 
-            selectDhikr(card) {
-                this.saveSession();
-                
-                this.dhikrCards.forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                
-                this.currentDhikr = card.dataset.dhikr;
-                this.currentDhikrEl.textContent = this.currentDhikr;
-                this.benefitText.textContent = this.benefits[this.currentDhikr];
-                
-                this.loadSession();
-                this.updateDisplay();
+            checkMilestone() {
+                const milestone = this.milestones.find(m => m === this.counter);
+                if (milestone) {
+                    this.showAchievement(milestone);
+                    this.showCelebration('🎉');
+                }
+
+                // Special celebrations
+                if (this.counter % 1000 === 0 && this.counter > 0) {
+                    this.showCelebration('✨');
+                }
             }
 
-            selectTarget(btn) {
-                this.targetBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                this.currentTarget = parseInt(btn.dataset.target);
-                this.updateDisplay();
-                this.saveSession();
+            showAchievement(milestone) {
+                this.achievementText.textContent = `لقد وصلت إلى ${milestone.toLocaleString('ar-EG')} مرة! ماشاء الله تبارك الله`;
+                this.achievementPopup.classList.add('show');
+
+                setTimeout(() => {
+                    this.achievementPopup.classList.remove('show');
+                }, 3000);
             }
 
-            resetCounter() {
-                this.currentCount = 0;
-                this.updateDisplay();
-                this.saveSession();
-                this.showNotification('تم إعادة تعيين العداد بنجاح');
+            showCelebration(emoji) {
+                this.celebration.textContent = emoji;
+                this.celebration.style.display = 'block';
+
+                setTimeout(() => {
+                    this.celebration.style.display = 'none';
+                }, 2000);
+            }
+
+            updateProgress() {
+                const nextMilestone = this.milestones.find(m => m > this.counter) || this.milestones[this.milestones.length - 1];
+                const prevMilestone = this.milestones.slice().reverse().find(m => m <= this.counter) || 0;
+
+                const progress = (this.counter - prevMilestone) / (nextMilestone - prevMilestone);
+                const circumference = 2 * Math.PI * 54;
+                const offset = circumference - (progress * circumference);
+
+                this.progressCircle.style.strokeDashoffset = offset;
+            }
+
+            toggleTheme() {
+                this.isDarkMode = !this.isDarkMode;
+                localStorage.setItem('darkMode', this.isDarkMode);
+                this.applyTheme();
             }
 
             toggleSound() {
                 this.soundEnabled = !this.soundEnabled;
-                this.soundBtn.textContent = `🔊 الصوت: ${this.soundEnabled ? 'تشغيل' : 'إيقاف'}`;
-                this.saveData();
-                this.showNotification(`تم ${this.soundEnabled ? 'تشغيل' : 'إيقاف'} الصوت`);
+                localStorage.setItem('soundEnabled', this.soundEnabled);
+                this.soundToggle.textContent = this.soundEnabled ? '🔊' : '🔇';
             }
 
-            shareProgress() {
-                const message = `🕌 المسبحة الإلكترونية\n\n` +
-                    `✨ ${this.currentDhikr}: ${this.dhikrCounts[this.currentDhikr] || 0} مرة\n` +
-                    `📊 المجموع اليوم: ${this.todayTotal}\n` +
-                    `🎯 الهدف الحالي: ${this.currentCount}/${this.currentTarget}\n\n` +
-                    `بارك الله فيكم وتقبل منا ومنكم صالح الأعمال`;
+            toggleFullscreen() {
+                this.isFullscreen = !this.isFullscreen;
 
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'المسبحة الإلكترونية',
-                        text: message
-                    });
+                if (this.isFullscreen) {
+                    document.body.classList.add('fullscreen-mode');
+                    this.fullscreenToggle.textContent = '✕';
+                    this.fullscreenToggle.title = 'الخروج من وضع ملء الشاشة';
                 } else {
-                    navigator.clipboard.writeText(message).then(() => {
-                        this.showNotification('تم نسخ الإنجاز للحافظة');
-                    });
+                    document.body.classList.remove('fullscreen-mode');
+                    this.fullscreenToggle.textContent = '⛶';
+                    this.fullscreenToggle.title = 'وضع ملء الشاشة';
                 }
             }
 
-            showSettings() {
-                this.showNotification('الإعدادات قريباً إن شاء الله');
+            showImportModal() {
+                this.importModal.classList.add('show');
             }
 
-            updateDisplay() {
-                this.counterNumber.textContent = this.currentCount;
-                
-                // Update progress ring
-                const progress = (this.currentCount / this.currentTarget) * 100;
-                const progressOffset = 628 - (628 * progress / 100);
-                this.progressRing.style.strokeDashoffset = progressOffset;
-                
-                // Update progress text
-                this.progressText.textContent = `${this.currentCount} من ${this.currentTarget} (${Math.round(progress)}%)`;
-                
-                // Update stats
-                this.totalTodayEl.textContent = this.todayTotal.toLocaleString();
-                this.currentStreakEl.textContent = this.totalCount.toLocaleString();
-                this.targetProgressEl.textContent = Math.min(100, Math.round(progress)) + '%';
-                
-                // Update dhikr counts in cards
-                this.dhikrCards.forEach(card => {
-                    const dhikr = card.dataset.dhikr;
-                    const count = this.dhikrCounts[dhikr] || 0;
-                    const countEl = card.querySelector('.dhikr-count');
-                    countEl.textContent = `${count} مرة`;
-                });
+            hideImportModal() {
+                this.importModal.classList.remove('show');
+                this.fileInput.value = '';
+                this.dropZone.classList.remove('dragover');
             }
 
-            createRipple(e) {
-                if (!e) return;
-                
-                const button = e.currentTarget;
-                const rect = button.getBoundingClientRect();
-                const size = 50;
-                const x = (e.clientX || e.touches[0].clientX) - rect.left - size / 2;
-                const y = (e.clientY || e.touches[0].clientY) - rect.top - size / 2;
-
-                const ripple = document.createElement('div');
-                ripple.className = 'ripple-effect';
-                ripple.style.width = ripple.style.height = size + 'px';
-                ripple.style.left = x + 'px';
-                ripple.style.top = y + 'px';
-
-                button.appendChild(ripple);
-
-                setTimeout(() => {
-                    ripple.remove();
-                }, 600);
+            handleDragOver(e) {
+                e.preventDefault();
+                this.dropZone.classList.add('dragover');
             }
 
-            addPulseAnimation() {
-                this.counterBtn.classList.add('pulse-animation');
-                setTimeout(() => {
-                    this.counterBtn.classList.remove('pulse-animation');
-                }, 300);
+            handleDragLeave(e) {
+                e.preventDefault();
+                this.dropZone.classList.remove('dragover');
             }
 
-            celebrate() {
-                this.showNotification(`🎉 مبروك! أكملت ${this.currentTarget} من ${this.currentDhikr}`);
-                this.createConfetti();
-                this.playSuccessSound();
-                
-                // Auto reset for next round
-                setTimeout(() => {
-                    this.currentCount = 0;
-                    this.updateDisplay();
-                    this.saveSession();
-                }, 2000);
-            }
+            handleDrop(e) {
+                e.preventDefault();
+                this.dropZone.classList.remove('dragover');
 
-            createConfetti() {
-                const colors = ['#4CAF50', '#FF6B6B', '#FFD93D', '#6BCF7F', '#4D96FF', '#9B59B6'];
-                
-                for (let i = 0; i < 60; i++) {
-                    setTimeout(() => {
-                        const confetti = document.createElement('div');
-                        confetti.className = 'confetti';
-                        confetti.style.left = Math.random() * 100 + 'vw';
-                        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                        confetti.style.animationDelay = Math.random() * 2 + 's';
-                        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                        
-                        this.celebration.appendChild(confetti);
-                        
-                        setTimeout(() => {
-                            confetti.remove();
-                        }, 4000);
-                    }, i * 30);
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    this.processImportFile(files[0]);
                 }
             }
 
-            showNotification(message) {
-                this.notification.textContent = message;
-                this.notification.classList.add('show');
-                
-                setTimeout(() => {
-                    this.notification.classList.remove('show');
-                }, 3000);
-            }
-
-            playClickSound() {
-                if (!this.soundEnabled) return;
-                
-                try {
-                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
-                    
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-                    
-                    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
-                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-                    
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 0.1);
-                } catch (e) {
-                    console.log('Audio not supported');
+            handleFileSelect(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    this.processImportFile(file);
                 }
             }
 
-            playSuccessSound() {
-                if (!this.soundEnabled) return;
-                
-                try {
-                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    const frequencies = [523, 659, 784, 1047];
-                    
-                    frequencies.forEach((freq, index) => {
-                        setTimeout(() => {
-                            const oscillator = audioContext.createOscillator();
-                            const gainNode = audioContext.createGain();
-                            
-                            oscillator.connect(gainNode);
-                            gainNode.connect(audioContext.destination);
-                            
-                            oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
-                            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
-                            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
-                            
-                            oscillator.start(audioContext.currentTime);
-                            oscillator.stop(audioContext.currentTime + 0.4);
-                        }, index * 200);
-                    });
-                } catch (e) {
-                    console.log('Audio not supported');
+            processImportFile(file) {
+                if (!file.type.includes('json')) {
+                    this.showNotification('⚠️ يرجى اختيار ملف JSON صحيح!', 'error');
+                    return;
                 }
-            }
 
-            saveData() {
-                const data = {
-                    dhikrCounts: this.dhikrCounts,
-                    todayTotal: this.todayTotal,
-                    todayDate: new Date().toDateString(),
-                    totalCount: this.totalCount,
-                    soundEnabled: this.soundEnabled
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        this.importData(data);
+                    } catch (error) {
+                        this.showNotification('❌ خطأ في قراءة الملف! تأكد من صحة الملف.', 'error');
+                    }
                 };
-                
-                Object.keys(data).forEach(key => {
-                    window.tasbihData = window.tasbihData || {};
-                    window.tasbihData[key] = data[key];
+                reader.readAsText(file);
+            }
+
+            importData(data) {
+                if (!data.counters) {
+                    this.showNotification('❌ ملف البيانات غير صحيح!', 'error');
+                    return;
+                }
+
+                // Confirmation dialog
+                const confirmImport = confirm(
+                    `هل تريد استيراد البيانات؟\n\n` +
+                    `سيتم استبدال البيانات الحالية:\n` +
+                    `- الاستغفار: ${data.counters.استغفار || 0}\n` +
+                    `- الصلاة على النبي: ${data.counters.صلاة || 0}\n` +
+                    `- التسبيح: ${data.counters.تسبيح || 0}\n\n` +
+                    `تاريخ التصدير: ${new Date(data.exportDate).toLocaleDateString('ar-EG')}`
+                );
+
+                if (!confirmImport) return;
+
+                // Import counters
+                Object.keys(data.counters).forEach(dhikr => {
+                    if (this.dhikrTexts[dhikr]) {
+                        const saveData = {
+                            count: data.counters[dhikr],
+                            dhikr: dhikr,
+                            timestamp: new Date().toISOString()
+                        };
+                        localStorage.setItem(`tasbih_${dhikr}`, JSON.stringify(saveData));
+                    }
                 });
+
+                // Reload current dhikr
+                this.loadProgress();
+                this.updateDisplay();
+                this.updateProgress();
+
+                this.hideImportModal();
+                this.showNotification('✅ تم استيراد البيانات بنجاح!', 'success');
             }
 
-            loadData(key) {
-                if (!window.tasbihData) return null;
-                return window.tasbihData[key];
+            exportData() {
+                const data = {
+                    currentDhikr: this.currentDhikr,
+                    counters: {},
+                    totalToday: this.todayCount,
+                    exportDate: new Date().toISOString(),
+                    milestones: this.milestones.filter(m => m <= this.counter)
+                };
+
+                // Export all dhikr counters
+                Object.keys(this.dhikrTexts).forEach(dhikr => {
+                    const savedData = localStorage.getItem(`tasbih_${dhikr}`);
+                    if (savedData) {
+                        data.counters[dhikr] = JSON.parse(savedData).count || 0;
+                    }
+                });
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `tasbih-data-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                this.showNotification('✅ تم تصدير البيانات بنجاح!', 'success');
             }
 
-            loadTodayTotal() {
-                const today = new Date().toDateString();
-                const savedDate = this.loadData('todayDate');
-                
-                if (savedDate === today) {
-                    return this.loadData('todayTotal') || 0;
+            applyTheme() {
+                if (this.isDarkMode) {
+                    document.body.classList.add('dark-mode');
                 } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            }
+
+            showNotification(message, type = 'success') {
+                const notification = document.createElement('div');
+                notification.textContent = message;
+
+                const backgroundColor = type === 'error' ? '#e74c3c' : '#27ae60';
+
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: ${backgroundColor};
+                    color: white;
+                    padding: 15px 30px;
+                    border-radius: 25px;
+                    z-index: 10001;
+                    font-weight: bold;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    max-width: 90%;
+                    text-align: center;
+                `;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.remove();
+                }, 4000);
+            }
+
+            getTodayCount() {
+                const today = new Date().toDateString();
+                const savedToday = localStorage.getItem('todayDate');
+
+                if (savedToday === today) {
+                    return parseInt(localStorage.getItem('todayCount')) || 0;
+                } else {
+                    localStorage.setItem('todayDate', today);
+                    localStorage.setItem('todayCount', '0');
                     return 0;
                 }
             }
 
-            saveSession() {
-                const sessionKey = `session_${this.currentDhikr}_${this.currentTarget}`;
-                window.tasbihData = window.tasbihData || {};
-                window.tasbihData[sessionKey] = this.currentCount;
+            saveTodayCount() {
+                localStorage.setItem('todayCount', this.todayCount.toString());
             }
 
-            loadSession() {
-                const sessionKey = `session_${this.currentDhikr}_${this.currentTarget}`;
-                this.currentCount = this.loadData(sessionKey) || 0;
+            resetCounter() {
+                if (confirm('هل أنت متأكد من إعادة تعيين العداد؟ \n(لن يؤثر هذا على إحصائيات اليوم)')) {
+                    this.counter = 0;
+                    this.updateDisplay();
+                    this.saveProgress();
+                }
+            }
+
+            switchDhikr(dhikrType) {
+                // Remove active class from all options
+                this.dhikrOptions.forEach(option => option.classList.remove('active'));
+
+                // Add active class to selected option
+                document.querySelector(`[data-dhikr="${dhikrType}"]`).classList.add('active');
+
+                this.currentDhikr = dhikrType;
+                this.dhikrTextElement.textContent = this.dhikrTexts[dhikrType];
+
+                // Load counter for this dhikr
+                this.loadProgress();
+                this.updateDisplay();
+                this.updateProgress();
+            }
+
+            updateDisplay() {
+                this.counterInput.value = this.counter;
+                this.todayTotalElement.textContent = this.todayCount.toLocaleString('ar-EG');
+                this.saveTodayCount();
+            }
+
+            animateButton() {
+                this.clickButton.classList.add('clicked');
+                setTimeout(() => {
+                    this.clickButton.classList.remove('clicked');
+                }, 600);
+            }
+
+            dispatchCounterEvent() {
+                document.dispatchEvent(new CustomEvent('counterChanged'));
+            }
+
+            saveProgress() {
+                const saveData = {
+                    count: this.counter,
+                    dhikr: this.currentDhikr,
+                    timestamp: new Date().toISOString()
+                };
+
+                localStorage.setItem(`tasbih_${this.currentDhikr}`, JSON.stringify(saveData));
+                this.updateStats('تم الحفظ الآن');
+            }
+
+            autoSave() {
+                this.saveProgress();
+                this.updateStats('تم الحفظ التلقائي');
+            }
+
+            loadProgress() {
+                const savedData = localStorage.getItem(`tasbih_${this.currentDhikr}`);
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    this.counter = data.count || 0;
+
+                    const lastSave = new Date(data.timestamp).toLocaleString('ar-EG', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    this.updateStats(lastSave);
+                } else {
+                    this.counter = 0;
+                    this.updateStats('لم يتم الحفظ بعد');
+                }
+            }
+
+            updateStats(lastSaveText) {
+                this.lastSaveElement.textContent = lastSaveText;
             }
         }
 
-        // Initialize the app
+        // Initialize the application when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            new SmartTasbih();
+            new IslamicTasbih();
         });
 
-        // Service Worker for offline support
+        // Service Worker for offline functionality
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(() => {
-                    console.log('Service Worker registration failed');
-                });
-            });
-        }
+            navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`
+                const CACHE_NAME = 'tasbih-v1';
+                const urlsToCache = ['/'];
 
-        // Prevent zoom on double tap
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', (event) => {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
+                self.addEventListener('install', event => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME)
+                            .then(cache => cache.addAll(urlsToCache))
+                    );
+                });
+
+                self.addEventListener('fetch', event => {
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then(response => response || fetch(event.request))
+                    );
+                });
+            `)).catch(console.error);
+        }
     </script>
 </body>
 </html>
